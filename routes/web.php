@@ -20,6 +20,8 @@ Route::get('/', function () {
 //  Auth::routes();
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
+Route::get('/test', [App\Http\Controllers\MovieDataController::class, 'getPopular']);
+
 
 
 
