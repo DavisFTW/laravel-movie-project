@@ -1,7 +1,11 @@
 <?php
 
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MovieDataController;
+use App\Models\movieData;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\MovieDataController as mdc;
+use App\Models\movieData as md;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,16 +17,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Avoid inline functions and prefer controllers — limits caching/performance
+
+
 Route::get('/', function () {
-    return view('index');
+  $obj = new MovieDataController();
+  $obj->initDataWorks();
+  return view('index');
 });
-
-//  Auth::routes();
-
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
-Route::get('/test', [App\Http\Controllers\MovieDataController::class, 'getPopular']);
-
-
-
-
 
