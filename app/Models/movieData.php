@@ -12,8 +12,5 @@ class movieData extends Model
     protected $fillable = [
         'movie_id',
     ];
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
+    public $timestamps = true;
 }
