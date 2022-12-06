@@ -13,10 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('movie_data', function (Blueprint $table) {
+        Schema::create('movie_data', function ($table) {
             $table->id();
             $table->string('movie_id');
             $table->timestamps();
+            $table->integer('active');
         });
     }
 

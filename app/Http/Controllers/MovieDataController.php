@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 use App\Models\movieData;
+use Carbon\Traits\Timestamp;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Nette\Utils\DateTime;
 
 class MovieDataController extends Controller
 {
-    protected function insertData(string $data)
+       protected function insertData(string $data)
     {
         return movieData::create([
             'movie_id' => $data,
@@ -16,6 +17,8 @@ class MovieDataController extends Controller
     }
     private function theGreatReset($table_name)
     {
+
+        //#FIXME: I DO NOT BELONG HERE
         DB::statement("SET @count = 0;");
         DB::statement("UPDATE `$table_name` SET `$table_name`.`id` = @count:= @count + 1;");
         DB::statement("ALTER TABLE `$table_name` AUTO_INCREMENT = 1;");
@@ -37,7 +40,7 @@ class MovieDataController extends Controller
         $currDate = new DateTime(date('Y-m-d H:i:s'));
         $dbDate = new DateTime($createdAtObj[1]->created_at);
 
-        $dbInterval = $currDate->diff($dbDate)->format('%d');
+        $dbInterval = $currDate->diff($dbDate)->format('%i');
 
         if ($dbInterval >= $requestedInterval) {
             return false;  
@@ -46,7 +49,7 @@ class MovieDataController extends Controller
         }
     }
 
-    protected function apiPopular($reset = true){
+    protected function apiPopular($reset = false){
         
         MovieDataController::theGreatReset('movie_data');
         
@@ -81,8 +84,20 @@ class MovieDataController extends Controller
             foreach ($response as $key => $value) {
                 array_push($arrayt, $response[$key]);
             }
-            foreach ($arrayt as $key => $value) {
-                MovieDataController::insertData($arrayt[$key]);
+
+            if(!$reset){
+                // new inserts
+                foreach ($arrayt as $key => $value) {
+                    var_dump("reset was false");
+                    MovieDataController::insertData($arrayt[$key]);
+                }
+            }
+
+            else{
+                foreach ($arrayt as $key => $value) {
+                    var_dump("update in progress");
+                    movieData::where('active', 1)->update(['movie_id' => $arrayt[$key]]);
+                }
             }
         }
     }
@@ -99,8 +114,6 @@ class MovieDataController extends Controller
             return 0;
         }
 
-        for ($i=0; $i <= 100 ; $i++) { 
-        
-        }
+        MovieDataController::apiPopular(true);
     }
 }

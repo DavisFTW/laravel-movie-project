@@ -12,5 +12,9 @@ class movieData extends Model
     protected $fillable = [
         'movie_id',
     ];
+
+    protected $attributes = [
+        'active' => 1,
+    ];
     public $timestamps = true;
 }
