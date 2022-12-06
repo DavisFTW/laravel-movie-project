@@ -8,7 +8,7 @@ use Nette\Utils\DateTime;
 
 class MovieDataController extends Controller
 {
-        protected function insertData(string $data)
+    protected function insertData(string $data)
     {
         return movieData::create([
             'movie_id' => $data,
@@ -20,7 +20,6 @@ class MovieDataController extends Controller
         DB::statement("UPDATE `$table_name` SET `$table_name`.`id` = @count:= @count + 1;");
         DB::statement("ALTER TABLE `$table_name` AUTO_INCREMENT = 1;");
     }
-
 
     protected function isDataPresent($tableName)
     {
@@ -77,7 +76,7 @@ class MovieDataController extends Controller
         if ($err) {
             echo "cURL Error #:" . $err;
         } 
-        else {          
+        else {
             $arrayt = [];
             foreach ($response as $key => $value) {
                 array_push($arrayt, $response[$key]);
@@ -89,19 +88,19 @@ class MovieDataController extends Controller
     }
     function initDataWorks()
     {
-        $test = movieData::select('created_at')->get();
-        var_dump($test);
         if(!MovieDataController::isDataPresent('movie_data'))
         {
             var_dump("ERROR: no data in db! INSERTING DATA:");
             MovieDataController::apiPopular();
             return 0;
         }
-
         if (MovieDataController::isUpdated('movie_data', 7)) {
             var_dump("no need to update !");
             return 0;
         }
-        //#FINISHME: find out how to update values
+
+        for ($i=0; $i <= 100 ; $i++) { 
+        
+        }
     }
 }
