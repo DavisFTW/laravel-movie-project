@@ -24,8 +24,8 @@ class MovieDataController extends Controller
 
     protected function isDataPresent($tableName)
     {
-        $count = DB::select("SELECT * FROM `$tableName` WHERE ID = 1;");
-        IF($count >= 1){
+        $count = movieData::get()->count(); 
+        if($count >= 1){
             return true;
         } else{
             return false;
@@ -47,8 +47,10 @@ class MovieDataController extends Controller
         }
     }
 
-    protected function apiPopular(){
+    protected function apiPopular($reset = true){
+        
         MovieDataController::theGreatReset('movie_data');
+        
         $curl = curl_init();
         curl_setopt_array($curl, [
         CURLOPT_URL => "https://imdb8.p.rapidapi.com/title/get-most-popular-movies?homeCountry=US&purchaseCountry=US&currentCountry=US",
@@ -87,9 +89,11 @@ class MovieDataController extends Controller
     }
     function initDataWorks()
     {
+        $test = movieData::select('created_at')->get();
+        var_dump($test);
         if(!MovieDataController::isDataPresent('movie_data'))
         {
-            var_dump("ERROR: no data in db !");
+            var_dump("ERROR: no data in db! INSERTING DATA:");
             MovieDataController::apiPopular();
             return 0;
         }
@@ -98,7 +102,6 @@ class MovieDataController extends Controller
             var_dump("no need to update !");
             return 0;
         }
-
         //#FINISHME: find out how to update values
     }
 }
