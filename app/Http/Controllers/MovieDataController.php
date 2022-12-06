@@ -40,7 +40,7 @@ class MovieDataController extends Controller
         $currDate = new DateTime(date('Y-m-d H:i:s'));
         $dbDate = new DateTime($createdAtObj[1]->created_at);
 
-        $dbInterval = $currDate->diff($dbDate)->format('%i');
+        $dbInterval = $currDate->diff($dbDate)->format('%d');
 
         if ($dbInterval >= $requestedInterval) {
             return false;  
@@ -49,7 +49,7 @@ class MovieDataController extends Controller
         }
     }
 
-    protected function apiPopular($reset = false){
+    protected function apiPopular($reset = true){
         
         MovieDataController::theGreatReset('movie_data');
         
@@ -76,6 +76,7 @@ class MovieDataController extends Controller
         $response = str_replace('/', '', $response);
         curl_close($curl);
 
+
         if ($err) {
             echo "cURL Error #:" . $err;
         } 
@@ -84,18 +85,13 @@ class MovieDataController extends Controller
             foreach ($response as $key => $value) {
                 array_push($arrayt, $response[$key]);
             }
-
-            if(!$reset){
-                // new inserts
+            if($reset){
                 foreach ($arrayt as $key => $value) {
-                    var_dump("reset was false");
                     MovieDataController::insertData($arrayt[$key]);
                 }
             }
-
             else{
                 foreach ($arrayt as $key => $value) {
-                    var_dump("update in progress");
                     movieData::where('active', 1)->update(['movie_id' => $arrayt[$key]]);
                 }
             }
@@ -105,15 +101,12 @@ class MovieDataController extends Controller
     {
         if(!MovieDataController::isDataPresent('movie_data'))
         {
-            var_dump("ERROR: no data in db! INSERTING DATA:");
             MovieDataController::apiPopular();
             return 0;
         }
         if (MovieDataController::isUpdated('movie_data', 7)) {
-            var_dump("no need to update !");
             return 0;
         }
-
-        MovieDataController::apiPopular(true);
+        MovieDataController::apiPopular(false);
     }
 }
