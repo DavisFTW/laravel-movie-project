@@ -15,15 +15,6 @@ class MovieDataController extends Controller
             'movie_id' => $data,
         ]);
     }
-    private function theGreatReset($table_name)
-    {
-
-        //#FIXME: I DO NOT BELONG HERE
-        DB::statement("SET @count = 0;");
-        DB::statement("UPDATE `$table_name` SET `$table_name`.`id` = @count:= @count + 1;");
-        DB::statement("ALTER TABLE `$table_name` AUTO_INCREMENT = 1;");
-    }
-
     protected function isDataPresent($tableName)
     {
         $count = movieData::get()->count(); 
