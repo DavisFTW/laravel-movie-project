@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 use App\Models\movieData;
-use Carbon\Traits\Timestamp;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Nette\Utils\DateTime;
 
@@ -39,7 +37,6 @@ class MovieDataController extends Controller
             return true;
         }
     }
-
     protected function apiPopular($reset = true){
         
         MovieDataController::theGreatReset('movie_data');
