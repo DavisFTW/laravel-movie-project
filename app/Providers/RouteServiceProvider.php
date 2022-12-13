@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
-    // no use for this 
+    // no use for this
     //use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegrationAssertPostConditions;
     
     

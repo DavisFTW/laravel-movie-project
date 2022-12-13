@@ -5,7 +5,6 @@ use App\Http\Controllers\MovieDataController;
 use App\Models\movieData;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MovieDataController as mdc;
-use App\Models\movieData as md;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,6 +22,7 @@ use App\Models\movieData as md;
 Route::get('/', function () {
   $obj = new MovieDataController();
   $obj->initDataWorks();
+  //$obj->getMovieByName('game of thrones');
   return view('index');
 });
 

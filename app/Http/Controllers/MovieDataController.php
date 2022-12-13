@@ -7,12 +7,76 @@ use Nette\Utils\DateTime;
 
 class MovieDataController extends Controller
 {
-       protected function insertData(string $data)
-    {
+private function getMoviebyIDAPI($ID){
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => "https://mdblist.p.rapidapi.com/?i=$ID",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
+                "X-RapidAPI-Host: mdblist.p.rapidapi.com",
+                "X-RapidAPI-Key: ed024143ffmsh68a50b37c1d5b1cp11d77fjsn4a5ae1ec93b0"
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+            echo "cURL Error #:" . $err;
+        } else {
+           //var_dump($response);
+        }
+} 
+
+public function getMovieByName($name){
+    $curl = curl_init();
+
+    curl_setopt_array($curl, [
+        CURLOPT_URL => "https://online-movie-database.p.rapidapi.com/title/find?q=$name",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        CURLOPT_HTTPHEADER => [
+            "X-RapidAPI-Host: online-movie-database.p.rapidapi.com",
+            "X-RapidAPI-Key: ed024143ffmsh68a50b37c1d5b1cp11d77fjsn4a5ae1ec93b0"
+        ],
+    ]);
+
+    $response = curl_exec($curl);
+    $err = curl_error($curl);
+
+    curl_close($curl);
+
+    if ($err) {
+        echo "cURL Error #:" . $err;
+    } else {
+        //proceed
+    }
+}
+    public function getMovie($movieArg){
+        if($movieArg[0] == 't' && $movieArg[1] == 't')
+        {
+            
+        }
+}
+       protected function insertData(string $data){
         return movieData::create([
             'movie_id' => $data,
         ]);
-    }
+}
     protected function isDataPresent($tableName)
     {
         $count = movieData::get()->count(); 
@@ -21,7 +85,7 @@ class MovieDataController extends Controller
         } else{
             return false;
         }
-    }   
+}   
     protected function isUpdated($tableName, $requestedInterval)
     {
         // returns false if required 2 update
@@ -36,11 +100,8 @@ class MovieDataController extends Controller
         } else {
             return true;
         }
-    }
+}
     protected function apiPopular($reset = true){
-        
-        MovieDataController::theGreatReset('movie_data');
-        
         $curl = curl_init();
         curl_setopt_array($curl, [
         CURLOPT_URL => "https://imdb8.p.rapidapi.com/title/get-most-popular-movies?homeCountry=US&purchaseCountry=US&currentCountry=US",
@@ -84,7 +145,7 @@ class MovieDataController extends Controller
                 }
             }
         }
-    }
+}
     function initDataWorks()
     {
         if(!MovieDataController::isDataPresent('movie_data'))
