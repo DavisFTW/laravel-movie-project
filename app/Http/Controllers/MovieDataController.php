@@ -110,6 +110,11 @@ class MovieDataController extends Controller
     }
     protected function apiPopular($reset = true)
     {
+
+        if($reset == false){
+            return 0;
+        }
+
         $curl = curl_init();
         curl_setopt_array($curl, [
         CURLOPT_URL => "https://imdb8.p.rapidapi.com/title/get-most-popular-movies?homeCountry=US&purchaseCountry=US&currentCountry=US",
@@ -152,18 +157,27 @@ class MovieDataController extends Controller
             }
         }
     }
+    
+    function debug_to_console($data) {
+        $output = $data;
+        if (is_array($output))
+            $output = implode(',', $output);
+    
+        echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
+    }
+
     function initDataWorks()
     {
-        if (! $this->isDataPresent('movie_data')) {
+        if (!$this->isDataPresent('movie_data')) {
             $this->apiPopular();
-            return 0;
         }
-        if ( $this->isUpdated('movie_data', 7)) {
-            return 0;
+        if (!$this->isUpdated('movie_data', 7)) {
+            $this->apiPopular();
         }
         $this->apiPopular(false);
-
-        // load images for /index for 5 or more randomly selected currently popular movies
-
+        // load images for /index for 5 or more randomly selected currently popular movie
+        $data = DB::select("select movie_id from movie_data LIMIT 10;");
+        var_dump($data);
+        // var_dump(151515151515);
     }
 }
