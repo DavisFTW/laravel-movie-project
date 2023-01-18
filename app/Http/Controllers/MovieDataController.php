@@ -9,25 +9,26 @@ use Nette\Utils\DateTime;
 
 class MovieDataController extends Controller
 {
-    private function getMoviebyIDAPI($ID)
+        private function getMoviebyID($ID)
     {
+        $array = json_decode($ID, true);
+        $curr = $array['movie_id'];
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-        CURLOPT_URL => "https://mdblist.p.rapidapi.com/?i=$ID",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_ENCODING => "",
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "GET",
-        CURLOPT_HTTPHEADER => [
+            CURLOPT_URL => "https://mdblist.p.rapidapi.com/?i=$curr",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
                 "X-RapidAPI-Host: mdblist.p.rapidapi.com",
-                "X-RapidAPI-Key: ed024143ffmsh68a50b37c1d5b1cp11d77fjsn4a5ae1ec93b0"
+                "X-RapidAPI-Key: ce57f65596msh6dc04e854ba1d77p1e556djsn4069d16d8b62"
             ],
         ]);
-
         $response = curl_exec($curl);
         $err = curl_error($curl);
 
@@ -43,22 +44,21 @@ class MovieDataController extends Controller
     public function getMovieByName($name)
     {
         $curl = curl_init();
-
         curl_setopt_array($curl, [
-        CURLOPT_URL => "https://online-movie-database.p.rapidapi.com/title/find?q=$name",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_ENCODING => "",
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "GET",
-        CURLOPT_HTTPHEADER => [
-                "X-RapidAPI-Host: online-movie-database.p.rapidapi.com",
-                "X-RapidAPI-Key: ed024143ffmsh68a50b37c1d5b1cp11d77fjsn4a5ae1ec93b0"
+            CURLOPT_URL => "https://mdblist.p.rapidapi.com/?s=jaws",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
+                "X-RapidAPI-Host: mdblist.p.rapidapi.com",
+                "X-RapidAPI-Key: ce57f65596msh6dc04e854ba1d77p1e556djsn4069d16d8b62"
             ],
         ]);
-
+        
         $response = curl_exec($curl);
         $err = curl_error($curl);
 
@@ -68,14 +68,6 @@ class MovieDataController extends Controller
             echo "cURL Error #:" . $err;
         } else {
             //proceed
-        }
-    }
-    public function getMovie($movieArg)
-    {
-        if ($movieArg[0] == 't' && $movieArg[1] == 't') {
-            $this->getMoviebyIDAPI($movieArg);
-        } else {
-            $this->getMovieByName($movieArg);
         }
     }
     protected function insertData(string $data)
@@ -175,9 +167,9 @@ class MovieDataController extends Controller
             $this->apiPopular();
         }
         $this->apiPopular(false);
-        // load images for /index for 5 or more randomly selected currently popular movie
         $data = DB::select("select movie_id from movie_data LIMIT 10;");
-        var_dump($data);
-        // var_dump(151515151515);
+
+        $test = json_encode($data[1]);
+        $this->getMoviebyID($test);
+        }
     }
-}
