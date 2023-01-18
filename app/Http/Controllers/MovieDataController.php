@@ -2,24 +2,27 @@
 
 namespace App\Http\Controllers;
 use App\Models\movieData;
+use DOMDocument;
+use Illuminate\Queue\LuaScripts;
 use Illuminate\Support\Facades\DB;
 use Nette\Utils\DateTime;
 
 class MovieDataController extends Controller
 {
-private function getMoviebyIDAPI($ID){
+    private function getMoviebyIDAPI($ID)
+    {
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => "https://mdblist.p.rapidapi.com/?i=$ID",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => [
+        CURLOPT_URL => "https://mdblist.p.rapidapi.com/?i=$ID",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        CURLOPT_HTTPHEADER => [
                 "X-RapidAPI-Host: mdblist.p.rapidapi.com",
                 "X-RapidAPI-Key: ed024143ffmsh68a50b37c1d5b1cp11d77fjsn4a5ae1ec93b0"
             ],
@@ -33,14 +36,15 @@ private function getMoviebyIDAPI($ID){
         if ($err) {
             echo "cURL Error #:" . $err;
         } else {
-           //var_dump($response);
+            //var_dump($response);
         }
-} 
+    }
 
-public function getMovieByName($name){
-    $curl = curl_init();
+    public function getMovieByName($name)
+    {
+        $curl = curl_init();
 
-    curl_setopt_array($curl, [
+        curl_setopt_array($curl, [
         CURLOPT_URL => "https://online-movie-database.p.rapidapi.com/title/find?q=$name",
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => true,
@@ -50,42 +54,45 @@ public function getMovieByName($name){
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => "GET",
         CURLOPT_HTTPHEADER => [
-            "X-RapidAPI-Host: online-movie-database.p.rapidapi.com",
-            "X-RapidAPI-Key: ed024143ffmsh68a50b37c1d5b1cp11d77fjsn4a5ae1ec93b0"
-        ],
-    ]);
+                "X-RapidAPI-Host: online-movie-database.p.rapidapi.com",
+                "X-RapidAPI-Key: ed024143ffmsh68a50b37c1d5b1cp11d77fjsn4a5ae1ec93b0"
+            ],
+        ]);
 
-    $response = curl_exec($curl);
-    $err = curl_error($curl);
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
 
-    curl_close($curl);
+        curl_close($curl);
 
-    if ($err) {
-        echo "cURL Error #:" . $err;
-    } else {
-        //proceed
-    }
-}
-    public function getMovie($movieArg){
-        if($movieArg[0] == 't' && $movieArg[1] == 't')
-        {
-            
+        if ($err) {
+            echo "cURL Error #:" . $err;
+        } else {
+            //proceed
         }
-}
-       protected function insertData(string $data){
+    }
+    public function getMovie($movieArg)
+    {
+        if ($movieArg[0] == 't' && $movieArg[1] == 't') {
+            $this->getMoviebyIDAPI($movieArg);
+        } else {
+            $this->getMovieByName($movieArg);
+        }
+    }
+    protected function insertData(string $data)
+    {
         return movieData::create([
             'movie_id' => $data,
         ]);
-}
+    }
     protected function isDataPresent($tableName)
     {
-        $count = movieData::get()->count(); 
-        if($count >= 1){
+        $count = movieData::get()->count();
+        if ($count >= 1) {
             return true;
-        } else{
+        } else {
             return false;
         }
-}   
+    }
     protected function isUpdated($tableName, $requestedInterval)
     {
         // returns false if required 2 update
@@ -96,12 +103,13 @@ public function getMovieByName($name){
         $dbInterval = $currDate->diff($dbDate)->format('%d');
 
         if ($dbInterval >= $requestedInterval) {
-            return false;  
+            return false;
         } else {
             return true;
         }
-}
-    protected function apiPopular($reset = true){
+    }
+    protected function apiPopular($reset = true)
+    {
         $curl = curl_init();
         curl_setopt_array($curl, [
         CURLOPT_URL => "https://imdb8.p.rapidapi.com/title/get-most-popular-movies?homeCountry=US&purchaseCountry=US&currentCountry=US",
@@ -128,34 +136,34 @@ public function getMovieByName($name){
 
         if ($err) {
             echo "cURL Error #:" . $err;
-        } 
-        else {
+        } else {
             $arrayt = [];
             foreach ($response as $key => $value) {
                 array_push($arrayt, $response[$key]);
             }
-            if($reset){
+            if ($reset) {
                 foreach ($arrayt as $key => $value) {
-                    MovieDataController::insertData($arrayt[$key]);
+                    $this->insertData($arrayt[$key]);
                 }
-            }
-            else{
+            } else {
                 foreach ($arrayt as $key => $value) {
                     movieData::where('active', 1)->update(['movie_id' => $arrayt[$key]]);
                 }
             }
         }
-}
+    }
     function initDataWorks()
     {
-        if(!MovieDataController::isDataPresent('movie_data'))
-        {
-            MovieDataController::apiPopular();
+        if (! $this->isDataPresent('movie_data')) {
+            $this->apiPopular();
             return 0;
         }
-        if (MovieDataController::isUpdated('movie_data', 7)) {
+        if ( $this->isUpdated('movie_data', 7)) {
             return 0;
         }
-        MovieDataController::apiPopular(false);
+        $this->apiPopular(false);
+
+        // load images for /index for 5 or more randomly selected currently popular movies
+
     }
 }

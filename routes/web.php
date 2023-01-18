@@ -27,7 +27,6 @@ Route::get('/', function () {
 });
 
 Route::get('/find', function(){
-
   return view('findDevice');
 });
 
