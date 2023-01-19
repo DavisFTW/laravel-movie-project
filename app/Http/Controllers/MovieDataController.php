@@ -6,6 +6,15 @@ use DOMDocument;
 use Illuminate\Queue\LuaScripts;
 use Illuminate\Support\Facades\DB;
 use Nette\Utils\DateTime;
+use Illuminate\Support\Facades\View;
+
+// FOR PUB USE
+
+
+$randMovie;
+$randMovie1;
+$randMovie2;
+
 
 class MovieDataController extends Controller
 {
@@ -34,10 +43,15 @@ class MovieDataController extends Controller
 
         curl_close($curl);
 
+        $dataJSON = json_decode($response);
+
         if ($err) {
             echo "cURL Error #:" . $err;
         } else {
-            //var_dump($response);
+
+            // global $randMovie;
+            // $randMovie = $dataJSON->poster;
+            return $dataJSON;
         }
     }
 
@@ -160,6 +174,7 @@ class MovieDataController extends Controller
 
     function initDataWorks()
     {
+        global $randMovie, $randMovie1, $randMovie2;
         if (!$this->isDataPresent('movie_data')) {
             $this->apiPopular();
         }
@@ -170,6 +185,24 @@ class MovieDataController extends Controller
         $data = DB::select("select movie_id from movie_data LIMIT 10;");
 
         $test = json_encode($data[1]);
-        $this->getMoviebyID($test);
+        $test1 = json_encode($data[2]);
+        $test2 = json_encode($data[3]);
+
+        $randMovie = $this->getMoviebyID($test);
+        $randMovie1 = $this->getMoviebyID($test1);
+        $randMovie2 = $this->getMoviebyID($test2);
+
+        if (property_exists($randMovie, 'poster')) {
+            View::share('randMovie', $randMovie->poster);
         }
+        if (property_exists($randMovie1, 'poster')) {
+            View::share('randMovie1', $randMovie1->poster);
+        }
+        if (property_exists($randMovie2, 'poster')) {
+            View::share('randMovie2', $randMovie2->poster);
+        }
+
+        // View::share('randMovie', $randMovie->poster);
+        // View::share('randMovie2', $randMovie2->poster);
+        }   
     }
